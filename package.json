@@ -1,0 +1,23 @@
+{
+  "name": "se-plants",
+  "version": "1.0.0",
+  "description": "Watering from Twitter project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NunoSoares-fac/se-plants.git"
+  },
+  "author": "Grupo 6",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NunoSoares-fac/se-plants/issues"
+  },
+  "homepage": "https://github.com/NunoSoares-fac/se-plants#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "twit": "^2.2.11"
+  }
+}
