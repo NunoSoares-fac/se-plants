@@ -17,10 +17,10 @@ server.on('message', (msg, rinfo) => {
             console.log("Success! JSON file updated!")
         });
     });
-  var x = 1;
+  var x = Math.round(Math.random());
   var y = Math.round(Math.random());
   var z = Math.round(Math.random());
-
+  let toSend = ("{led1:" + x + ", led2:" + y + ", led3:" + z + "}");
   server.send(x.toString(), rinfo.port, rinfo.address,function(error){
   if(error){
     client.close();
