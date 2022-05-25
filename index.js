@@ -3,9 +3,9 @@ const twit = require('./twit');
 var fs = require("fs");
 
 const threshold = {
-  humidity:50,
-  luminosity:0,
-  temperature:25
+  humidity:"50",
+  luminosity:"0",
+  temperature:"25"
 };
 
 //Test code to check if I can send tweets periodically AND IT WORKS!!!
@@ -20,6 +20,7 @@ setInterval(function () {
   let led = JSON.parse(data);
   let info_state= JSON.parse(info);
   if (info_state.plant1.humidity >= threshold.humidity) led.led1 = "1";
+  else led.led1 = "0";
   fs.writeFileSync('led_state.json', JSON.stringify(led));
 
 }, 2000);

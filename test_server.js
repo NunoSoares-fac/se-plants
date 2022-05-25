@@ -19,11 +19,12 @@ server.on('message', (msg, rinfo) => {
     });
   let data = fs.readFileSync('led_state.json');
   let led = JSON.parse(data);
-  var x = "{led:" + (led.led1).toString() + "}";
+  var x = "{\"led\":"+ "\"" + (led.led1).toString() + "\"" + "}";
+  console.log(x);
   var y = Math.round(Math.random());
   var z = Math.round(Math.random());
   let toSend = ("{led1:" + x + ", led2:" + y + ", led3:" + z + "}");
-  server.send(x.toString(), rinfo.port, rinfo.address,function(error){
+  server.send(x, rinfo.port, rinfo.address,function(error){
   if(error){
     client.close();
   }
