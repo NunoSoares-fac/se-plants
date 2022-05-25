@@ -18,11 +18,9 @@ server.on('message', (msg, rinfo) => {
         });
     });
   var x= Math.round(Math.random())
-  server.send(msg, rinfo.port, 'localhost',function(error){
+  server.send(x.toString(), rinfo.port, rinfo.address,function(error){
   if(error){
     client.close();
-  }else{
-    console.log(x);
   }
 
 });
