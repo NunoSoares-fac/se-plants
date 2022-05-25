@@ -17,7 +17,9 @@ server.on('message', (msg, rinfo) => {
             console.log("Success! JSON file updated!")
         });
     });
-  var x = Math.round(Math.random());
+  let data = fs.readFileSync('led_state.json');
+  let led = JSON.parse(data);
+  var x = "{led:" + (led.led1).toString() + "}";
   var y = Math.round(Math.random());
   var z = Math.round(Math.random());
   let toSend = ("{led1:" + x + ", led2:" + y + ", led3:" + z + "}");
