@@ -17,7 +17,7 @@ server.on('message', (msg, rinfo) => {
             console.log("Success! JSON file updated!")
         });
     });
-  var x = 1
+  var x = 0
   var y = Math.round(Math.random());
   var z = Math.round(Math.random());
 
