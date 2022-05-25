@@ -20,13 +20,13 @@ DHT dht = DHT(DHTdataPin, DHTType);
 WiFiUDP UDP;
 unsigned int localUdpPort = 4210;
 
-#define packetBufferSize 16
+#define packetBufferSize 12
 char packetBuffer[packetBufferSize];
 
-#define replyBufferSize 255
+#define replyBufferSize 88
 char replyBuffer[replyBufferSize];
 
-IPAddress remoteIP(192,168,138,118);
+IPAddress remoteIP(192,168,138,173);
 #define remotePort 41234
 
 void setup() {
