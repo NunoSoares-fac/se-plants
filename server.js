@@ -11,6 +11,30 @@ app.get('/info', function (req, res) {
    });
 })
 
+app.patch('/updateT', function (req, res) {
+   console.log(req.body)
+   let content = req.body;
+   let data = fs.readFileSync('threshold.json');
+   let threshold_data = JSON.parse(data);
+   
+   threshold_data.plant1.humidity_upper = content.plant1.humidity_upper;
+   threshold_data.plant1.humidity_lower = content.plant1.humidity_lower;
+
+   threshold_data.plant1.luminosity_upper = content.plant1.luminosity_upper;
+   threshold_data.plant1.luminosity_lower = content.plant1.luminosity_lower;
+
+   threshold_data.plant1.temperature_upper = content.plant1.temperature_upper;
+   threshold_data.plant1.temperature_lower = content.plant1.temperature_lower;
+
+   fs.writeFileSync('threshold.json', JSON.stringify(threshold_data));
+
+   //Code for debugging purposes
+   //data = fs.readFileSync('threshold.json');
+   //console.log(JSON.parse(data));
+
+   res.send({ 200: 'Success' });
+});
+
 app.patch('/update', function (req, res) {
    console.log(req.body)
    let content = req.body;
@@ -19,7 +43,6 @@ app.patch('/update', function (req, res) {
          fs.writeFile('info.json', JSON.stringify(content), function(err, result) {
             if (err) console.log('error', err);
             else res.send({ 200: 'Success' });
-
          });
       });
    } catch (err) {
@@ -32,5 +55,5 @@ app.patch('/update', function (req, res) {
 var server = app.listen(8081, function () {
    var host = server.address().address
    var port = server.address().port
-   console.log("Example app listening at http://%s:%s", host, port)
+   console.log("Listening at http://%s:%s", host, port)
 })
