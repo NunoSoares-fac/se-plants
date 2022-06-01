@@ -91,10 +91,17 @@ server.on('message', (msg, rinfo) => {
   //Get led state from the json file
   let data = fs.readFileSync('led_state.json');
   let led = JSON.parse(data);
+  let toSend;
 
   //Send a response to the arduino with the current led state
-  let toSend = ("{\"led1\":\"" + (led.led1).toString() + "\",\"led2\":\"" + (led.led2).toString() + "\",\"led3\":\"" + (led.led3).toString() + "\"}");
-  server.send(toSend, rinfo.port, rinfo.address,function(error){
+  if (rinfo.address == ips[0]) {
+    toSend = "{\"led1\":\"" + (led.plant1.led1).toString() + "\",\"led2\":\"" + (led.plant1.led2).toString() + "\",\"led3\":\"" + (led.plant1.led3).toString() + "\"}";
+  }
+  else {
+    toSend="{\"led1\":\"" + (led.plant2.led1).toString() + "\",\"led2\":\"" + (led.plant2.led2).toString() + "\",\"led3\":\"" + (led.plant2.led3).toString() + "\"}";
+  }
+  
+  server.send(toSend, rinfo.port, rinfo.address, function (error) {
     if(error){
       client.close();
     }
