@@ -1,15 +1,20 @@
 <resources>
     <string name="app_name">WateringFromTwitter</string>
-    <string name="action_settings">Settings</string>
+    <string name="change_plant">Change Plant</string>
     <!-- Strings used for fragments for navigation -->
     <string name="title_plant_status">Plant Status</string>
-    <string name="button_change_threshold">Change Threshold</string>
-    <string name="button_submit">Submit</string>
+    <string name="button_change_thresholds">Change Thresholds</string>
+    <string name="button_change_plant">Change Plant</string>
 
-    <string name="label_luminosity">Luminosity: %1$s lx</string>
-    <string name="label_temperature">Temperature: %1$s ºC</string>
-    <string name="label_humidity">Humidity: %1$s %</string>
-    <string name="label_current_threshold">Current luminosity threshold: %1$s lx</string>
-    <string name="label_actuator_active">Active: %1$s</string>
+    <string name="label_force_actuator">Force actuator?</string>
+    <string name="label_luminosity">Luminosity (lx):</string>
+    <string name="label_temperature">Temperature (ºC):</string>
+    <string name="label_humidity">Humidity (%):</string>
+    <string name="label_current_threshold">Current threshold:</string>
+    <string name="label_actuator_active">Active:</string>
+    <string name="label_change_to">Change to:</string>
     <string name="hint_new_threshold">New Threshold</string>
+    <string name="hint_plant_name">Plant Name</string>
+
+    <string name="error_invalid_threshold">ERROR: Invalid threshold value(s), must be numeric</string>
 </resources>

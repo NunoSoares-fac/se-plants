@@ -1,40 +1,23 @@
 package com.example.wateringfromtwitterapp;
 
 public class Plant {
-    private double temperature = -1;
-    private double humidity = -1;
-    private double luminosity = -1;
-    private double luminosityThreshold = -1;
-    private boolean isActuatorActive = false;
+    private MeasuredVariable temperature;
+    private MeasuredVariable luminosity;
+    private MeasuredVariable humidity;
 
-    public void updateMeasurements(double newTemperature, double newHumidity, double newLuminosity, boolean isActuatorActive) {
-        this.temperature = newTemperature;
-        this.humidity = newHumidity;
-        this.luminosity = newLuminosity;
-        this.isActuatorActive = isActuatorActive;
+    Plant() {
+        temperature = new MeasuredVariable();
+        luminosity = new MeasuredVariable();
+        humidity = new MeasuredVariable();
     }
 
-    public void updateLuminosityThreshold(double newThreshold) {
-        this.luminosityThreshold = newThreshold;
-    }
-
-    public double getTemperature() {
+    public MeasuredVariable temperature() {
         return temperature;
     }
-
-    public double getHumidity() {
-        return humidity;
-    }
-
-    public double getLuminosity() {
+    public MeasuredVariable luminosity() {
         return luminosity;
     }
-
-    public double getLuminosityThreshold() {
-        return luminosityThreshold;
-    }
-
-    public boolean isActuatorActive() {
-        return isActuatorActive;
+    public MeasuredVariable humidity() {
+        return humidity;
     }
 }
