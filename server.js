@@ -40,6 +40,15 @@ app.patch('/updateT', function (req, res) {
    threshold_data.plant1.temperature_upper = content.plant1.temperature_upper;
    threshold_data.plant1.temperature_lower = content.plant1.temperature_lower;
 
+   threshold_data.plant2.humidity_upper = content.plant2.humidity_upper;
+   threshold_data.plant2.humidity_lower = content.plant2.humidity_lower;
+
+   threshold_data.plant2.luminosity_upper = content.plant2.luminosity_upper;
+   threshold_data.plant2.luminosity_lower = content.plant2.luminosity_lower;
+
+   threshold_data.plant2.temperature_upper = content.plant2.temperature_upper;
+   threshold_data.plant2.temperature_lower = content.plant2.temperature_lower;
+
    fs.writeFileSync('threshold.json', JSON.stringify(threshold_data));
 
    //Code for debugging purposes
