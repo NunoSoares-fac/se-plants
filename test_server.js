@@ -2,7 +2,7 @@ var dgram = require('dgram');
 var fs = require("fs")
 
 const server = dgram.createSocket('udp4');
-
+var ips = [];
 /**
  * 
  Function responsible for updating led_state.json
@@ -16,14 +16,31 @@ function update_led_state() {
   let info_state = JSON.parse(info);
   let threshold_data = JSON.parse(thresholds);
   
-  if (info_state.plant1.humidity >= threshold_data.plant1.humidity_upper || info_state.plant1.humidity < threshold_data.plant1.humidity_lower) led.led1 = "1";
+  //Planta 1
+  if (info_state.plant1.humidity >= threshold_data.plant1.humidity_upper ||
+    info_state.plant1.humidity < threshold_data.plant1.humidity_lower) led.led1 = "1";
   else led.led1 = "0";
 
-  if (info_state.plant1.luminosity >= threshold_data.plant1.luminosity_upper || info_state.plant1.luminosity < threshold_data.plant1.luminosity_lower) led.led1 = "1";
+  if (info_state.plant1.luminosity >= threshold_data.plant1.luminosity_upper ||
+    info_state.plant1.luminosity < threshold_data.plant1.luminosity_lower) led.led2 = "1";
+  else led.led2 = "0";
+
+  if (info_state.plant1.temperature >= threshold_data.plant1.temperature_upper ||
+    info_state.plant1.temperature < threshold_data.plant1.temperature_lower) led.led3 = "1";
+  else led.led3 = "0";
+
+  //Planta 2
+  if (info_state.plant2.humidity >= threshold_data.plant1.humidity_upper ||
+    info_state.plant2.humidity < threshold_data.plant1.humidity_lower) led.led1 = "1";
   else led.led1 = "0";
 
-  if (info_state.plant1.temperature >= threshold_data.plant1.temperature_upper || info_state.plant1.temperature < threshold_data.plant1.temperature_lower) led.led1 = "1";
-  else led.led1 = "0";
+  if (info_state.plant2.luminosity >= threshold_data.plant1.luminosity_upper ||
+    info_state.plant2.luminosity < threshold_data.plant1.luminosity_lower) led.led2 = "1";
+  else led.led2 = "0";
+
+  if (info_state.plant2.temperature >= threshold_data.plant1.temperature_upper ||
+    info_state.plant2.temperature < threshold_data.plant1.temperature_lower) led.led3 = "1";
+  else led.led3 = "0";
 
   fs.writeFileSync('led_state.json', JSON.stringify(led));
 }
@@ -40,12 +57,35 @@ server.on('message', (msg, rinfo) => {
   //var obj = JSON.parse(`${msg}`);
   //console.log(obj.plant1.temperature);
 
+  if (ips.length == 0) ips.push(rinfo.address)
+  else if (!ips.includes(rinfo.address)) {
+    ips.push(rinfo.address);
+  }
+
   //Rewrite info.json with current values
-  fs.readFile('info.json', 'utf8', function () {
-      fs.writeFile('info.json', `${msg}`, function(err, result) {
-        console.log("Success! JSON file updated!");
-      });
-  });
+
+  let req_info=JSON.parse(msg)
+
+  let data_info = fs.readFileSync('info.json');
+  let info_json = JSON.parse(data_info);
+
+  if (rinfo.address == ips[0]) {
+    info_json.plant1.humidity = req_info.plant1.humidity;
+
+    info_json.plant1.luminosity = req_info.plant1.luminosity;
+
+    info_json.plant1.temperature = req_info.plant1.temperature;
+  }
+  else {
+    info_json.plant2.humidity = req_info.plant1.humidity;
+
+    info_json.plant2.luminosity = req_info.plant1.luminosity;
+
+    info_json.plant2.temperature = req_info.plant1.temperature;
+  }
+  
+  fs.writeFileSync('info.json', JSON.stringify(info_json));
+
   update_led_state()
 
   //Get led state from the json file
@@ -53,7 +93,7 @@ server.on('message', (msg, rinfo) => {
   let led = JSON.parse(data);
 
   //Send a response to the arduino with the current led state
-  let toSend = ("{led1:" + (led.led1).toString() + ", led2:" + (led.led2).toString() + ", led3:" + (led.led3).toString() + "}");
+  let toSend = ("{\"led1\":\"" + (led.led1).toString() + "\",\"led2\":\"" + (led.led2).toString() + "\",\"led3\":\"" + (led.led3).toString() + "\"}");
   server.send(toSend, rinfo.port, rinfo.address,function(error){
     if(error){
       client.close();
