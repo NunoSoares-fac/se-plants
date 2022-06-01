@@ -1,36 +1,41 @@
 package com.example.wateringfromtwitterapp;
 
-import android.view.View;
+import android.os.AsyncTask;
+import android.os.StrictMode;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.http.ContentType;
-import io.restassured.internal.RequestSpecificationImpl;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-
 public class DataBroker {
-    private Map<String, Plant> plants = new HashMap<>();
+    public static String baseUri = "http://192.168.43.191:8081";
 
+    private Map<String, Plant> plants = new HashMap<>();
     private static DataBroker instance = null;
-    private final static RequestSpecBuilder HTTP_REQUEST_BUILDER = (new RequestSpecBuilder()).addHeader("Content-Type", "application/json");
+
     private final static double DEFAULT_TEMPERATURE_THRESHOLD_DIFF = 2;
     private final static double DEFAULT_LUMINOSITY_THRESHOLD_DIFF = 30;
     private final static double DEFAULT_HUMIDITY_THRESHOLD_DIFF = 5;
 
-    private DataBroker() {}
+    private DataBroker() {
+    }
 
     public static DataBroker get() {
         if (instance == null) {
             synchronized (DataBroker.class) {
                 if (instance == null) {
                     instance = new DataBroker();
-                    RestAssured.baseURI = "http://192.168.0.42";
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
                 }
             }
         }
@@ -79,31 +84,27 @@ public class DataBroker {
     }
 
     public Plant updateMeasurements(String plantName) {
-        Plant plant1 = plants.get("plant1"), plant2 = plants.get("plant2");
+        Plant plant1 = plants.get(plantName);
         //Get values
         Map<String, String> responseMap = this.getMeasurements();
-        plant1.temperature().setValue(Double.parseDouble(responseMap.get("plant1.temperature")));
-        plant1.luminosity().setValue(Double.parseDouble(responseMap.get("plant1.luminosity")));
-        plant1.humidity().setValue(Double.parseDouble(responseMap.get("plant1.humidity")));
-        plant2.temperature().setValue(Double.parseDouble(responseMap.get("plant2.temperature")));
-        plant2.luminosity().setValue(Double.parseDouble(responseMap.get("plant2.luminosity")));
-        plant2.humidity().setValue(Double.parseDouble(responseMap.get("plant2.humidity")));
+        System.out.println(responseMap.toString());
+        System.out.println(plantName);
+        System.out.println(plants.toString());
+        plant1.temperature().setValue(Double.parseDouble(responseMap.get(plantName + ".temperature")));
+        plant1.luminosity().setValue(Double.parseDouble(responseMap.get(plantName + ".luminosity")));
+        plant1.humidity().setValue(Double.parseDouble(responseMap.get(plantName + ".humidity")));
+
         //Get thresholds
         responseMap = this.getThresholds();
-        plant1.temperature().setThreshold(Double.parseDouble(responseMap.get("plant1.temperature_lower")));
-        plant1.luminosity().setThreshold(Double.parseDouble(responseMap.get("plant1.luminosity_lower")));
-        plant1.humidity().setThreshold(Double.parseDouble(responseMap.get("plant1.humidity_lower")));
-        plant2.temperature().setThreshold(Double.parseDouble(responseMap.get("plant2.temperature_lower")));
-        plant2.luminosity().setThreshold(Double.parseDouble(responseMap.get("plant2.luminosity_lower")));
-        plant2.humidity().setThreshold(Double.parseDouble(responseMap.get("plant2.humidity_lower")));
+        plant1.temperature().setThreshold(Double.parseDouble(responseMap.get(plantName + ".temperature_lower")));
+        plant1.luminosity().setThreshold(Double.parseDouble(responseMap.get(plantName + ".luminosity_lower")));
+        plant1.humidity().setThreshold(Double.parseDouble(responseMap.get(plantName + ".humidity_lower")));
+
         //Get actuator flags
         responseMap = this.getActiveFlags();
-        plant1.temperature().setActive(responseMap.get("plant1.led1").equals("1"));
-        plant1.luminosity().setActive(responseMap.get("plant1.led3").equals("1"));
-        plant1.humidity().setActive(responseMap.get("plant1.led2").equals("1"));
-        plant2.temperature().setActive(responseMap.get("plant2.led1").equals("1"));
-        plant2.luminosity().setActive(responseMap.get("plant2.led3").equals("1"));
-        plant2.humidity().setActive(responseMap.get("plant2.led2").equals("1"));
+        plant1.temperature().setActive(responseMap.get(plantName + ".led1").equals("1"));
+        plant1.luminosity().setActive(responseMap.get(plantName + ".led3").equals("1"));
+        plant1.humidity().setActive(responseMap.get(plantName + ".led2").equals("1"));
         return plants.get(plantName);
     }
 
@@ -124,80 +125,120 @@ public class DataBroker {
     }
 
     public Map<String, String> getMeasurements() {
-        Response response = HTTP_REQUEST_BUILDER.build().get(RestAssured.baseURI + "/info");
-        response.then().statusCode(200);
-        String responseBody = response.body().toString();
-        JSONObject json;
         try {
-            json = new JSONObject(responseBody);
+            URL url = new URL(baseUri + "/info");
+            HttpURLConnection con = ((HttpURLConnection) url.openConnection());
+            con.setRequestMethod("GET");
+            //con.connect();
+            JSONObject json = this.readResponse(con);
+            return JsonHandler.get().jsonToMap(json);
         } catch (Exception e) {
-            System.out.println("ERROR:\n\n" + responseBody);
+            e.printStackTrace();
             return null;
         }
-        return JsonHandler.get().jsonToMap(json);
     }
 
     public Map<String, String> getThresholds() {
-        Response response = HTTP_REQUEST_BUILDER.build().get(RestAssured.baseURI + "/infoT");
-        response.then().statusCode(200);
-        String responseBody = response.body().toString();
-        JSONObject json;
         try {
-            json = new JSONObject(responseBody);
+            URL url = new URL(baseUri + "/infoT");
+            HttpURLConnection con = ((HttpURLConnection) url.openConnection());
+            con.setRequestMethod("GET");
+            JSONObject json = this.readResponse(con);
+            return JsonHandler.get().jsonToMap(json);
         } catch (Exception e) {
-            System.out.println("ERROR:\n\n" + responseBody);
+            e.printStackTrace();
             return null;
         }
-        return JsonHandler.get().jsonToMap(json);
     }
 
     public Map<String, String> getActiveFlags() {
-        Response response = HTTP_REQUEST_BUILDER.build().get(RestAssured.baseURI + "/infoL");
-        response.then().statusCode(200);
-        String responseBody = response.body().toString();
-        JSONObject json;
         try {
-            json = new JSONObject(responseBody);
+            URL url = new URL(baseUri + "/infoL");
+            HttpURLConnection con = ((HttpURLConnection) url.openConnection());
+            con.setRequestMethod("GET");
+            JSONObject json = this.readResponse(con);
+            return JsonHandler.get().jsonToMap(json);
         } catch (Exception e) {
-            System.out.println("ERROR:\n\n" + responseBody);
+            e.printStackTrace();
             return null;
         }
-        return JsonHandler.get().jsonToMap(json);
     }
 
     public void patchThreshold() {
         Map<String, String> requestMap = new HashMap<>();
-        Plant plant1 = plants.get("plant1"), plant2 = plants.get("plant2");
-        requestMap.put("plant1.temperature_lower", String.valueOf(plant1.temperature().getThreshold()));
-        requestMap.put("plant1.luminosity_lower", String.valueOf(plant1.luminosity().getThreshold()));
-        requestMap.put("plant1.humidity_lower", String.valueOf(plant1.humidity().getThreshold()));
-        requestMap.put("plant1.temperature_high", String.valueOf(plant1.temperature().getThreshold() + DEFAULT_TEMPERATURE_THRESHOLD_DIFF));
-        requestMap.put("plant1.luminosity_high", String.valueOf(plant1.luminosity().getThreshold() + DEFAULT_LUMINOSITY_THRESHOLD_DIFF));
-        requestMap.put("plant1.humidity_high", String.valueOf(plant1.humidity().getThreshold() + DEFAULT_HUMIDITY_THRESHOLD_DIFF));
-        requestMap.put("plant2.temperature_lower", String.valueOf(plant2.temperature().getThreshold()));
-        requestMap.put("plant2.luminosity_lower", String.valueOf(plant2.luminosity().getThreshold()));
-        requestMap.put("plant2.humidity_lower", String.valueOf(plant2.humidity().getThreshold()));
-        requestMap.put("plant2.temperature_high", String.valueOf(plant2.temperature().getThreshold() + DEFAULT_TEMPERATURE_THRESHOLD_DIFF));
-        requestMap.put("plant2.luminosity_high", String.valueOf(plant2.luminosity().getThreshold() + DEFAULT_LUMINOSITY_THRESHOLD_DIFF));
-        requestMap.put("plant2.humidity_high", String.valueOf(plant2.humidity().getThreshold() + DEFAULT_HUMIDITY_THRESHOLD_DIFF));
-        JSONObject requestJson = JsonHandler.get().mapToJson(requestMap);
+        for (String plantName: plants.keySet()) {
+            Plant plant = plants.get(plantName);
+            requestMap.put(plantName + ".temperature_lower", String.valueOf(plant.temperature().getThreshold()));
+            requestMap.put(plantName  + ".luminosity_lower", String.valueOf(plant.luminosity().getThreshold()));
+            requestMap.put(plantName  + ".humidity_lower", String.valueOf(plant.humidity().getThreshold()));
+            requestMap.put(plantName  + ".temperature_high", String.valueOf(plant.temperature().getThreshold() + DEFAULT_TEMPERATURE_THRESHOLD_DIFF));
+            requestMap.put(plantName  + ".luminosity_high", String.valueOf(plant.luminosity().getThreshold() + DEFAULT_LUMINOSITY_THRESHOLD_DIFF));
+            requestMap.put(plantName  + ".humidity_high", String.valueOf(plant.humidity().getThreshold() + DEFAULT_HUMIDITY_THRESHOLD_DIFF));
+        }
 
-        Response response = HTTP_REQUEST_BUILDER.setBody(requestJson.toString()).build().patch(RestAssured.baseURI + "/updateT");
-        response.then().statusCode(200);
+        JSONObject requestJson = JsonHandler.get().mapToJson(requestMap, plants.keySet().toArray(new String[]{}));
+        try {
+            URL url = new URL(baseUri + "/updateT");
+            HttpURLConnection con = ((HttpURLConnection) url.openConnection());
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestMethod("PATCH");
+            this.mountRequest(con, requestJson);
+            System.out.println("Url: " + url);
+            System.out.println(requestMap.toString());
+            System.out.println(requestJson.toString());
+            System.out.println(con.getResponseCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void patchActuators() {
         Map<String, String> requestMap = new HashMap<>();
-        Plant plant1 = plants.get("plant1"), plant2 = plants.get("plant2");
-        requestMap.put("plant1.led1", String.valueOf(plant1.temperature().getThreshold()));
-        requestMap.put("plant1.led2", String.valueOf(plant1.humidity().getThreshold()));
-        requestMap.put("plant1.led3", String.valueOf(plant1.luminosity().getThreshold()));
-        requestMap.put("plant2.led1", String.valueOf(plant2.temperature().getThreshold()));
-        requestMap.put("plant2.led2", String.valueOf(plant2.humidity().getThreshold()));
-        requestMap.put("plant2.led3", String.valueOf(plant2.luminosity().getThreshold()));
+        for (Plant plant : plants.values()) {
+            requestMap.put(plant.getName() + ".led1", plant.temperature().isActive() ? "1" : "0");
+            requestMap.put(plant.getName() + ".led2", plant.humidity().isActive() ? "1" : "0");
+            requestMap.put(plant.getName() + ".led3", plant.luminosity().isActive() ? "1" : "0");
+        }
 
-        JSONObject requestJson = JsonHandler.get().mapToJson(requestMap);
-        Response response = HTTP_REQUEST_BUILDER.setBody(requestJson.toString()).build().patch(RestAssured.baseURI + "/update");
-        response.then().statusCode(200);
+        JSONObject requestJson = JsonHandler.get().mapToJson(requestMap, plants.keySet().toArray(new String[]{}));
+        try {
+            URL url = new URL(baseUri + "/update");
+            HttpURLConnection con = ((HttpURLConnection) url.openConnection());
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestMethod("PATCH");
+            this.mountRequest(con, requestJson);
+            System.out.println("Url: " + url);
+            System.out.println(requestMap.toString());
+            System.out.println(requestJson.toString());
+            System.out.println(con.getResponseCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject readResponse(HttpURLConnection con) {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            return new JSONObject(response.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void mountRequest(HttpURLConnection con, JSONObject json) {
+        try(OutputStream os = con.getOutputStream()) {
+            byte[] input = json.toString().getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

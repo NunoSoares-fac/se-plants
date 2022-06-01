@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class JsonHandler {
 
@@ -43,19 +44,39 @@ public class JsonHandler {
         return responseMap;
     }
 
-    public JSONObject mapToJson(Map<String,String> map) {
+    public void jsonToMapNoWrapper(Map<String, String> map, String plantName, JSONObject body) {
+        try {
+            for (Iterator<String> it = body.keys(); it.hasNext(); ) {
+                String variable = it.next();
+                map.put(plantName + "." + variable, body.getString(variable));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public JSONObject mapToJson(Map<String,String> map, String[] plants) {
         JSONObject body = new JSONObject();
         try {
-            body.put("plant1", new JSONObject());
-            body.put("plant2", new JSONObject());
-            Iterator<String> keys = body.keys();
-            while (keys.hasNext()) {
-                String plantName = keys.next();
-                JSONObject wrapper = body.getJSONObject(plantName);
-                for (Iterator<String> it = wrapper.keys(); it.hasNext(); ) {
-                    String key = it.next();
-                    map.put(plantName + "." + key, wrapper.getString(key));
+            for (String plantName: plants) {
+                body.put(plantName, new JSONObject());
+                for (String key: map.keySet()) {
+                    String variable = key.split("\\.")[1].substring(1);
+                    body.getJSONObject(plantName).put(variable, map.get(plantName + "." + variable));
                 }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return body;
+    }
+
+    public JSONObject mapToJsonNoWrapper(Map<String,String> map, String plantName) {
+        JSONObject body = new JSONObject();
+        try {
+            for (String key: map.keySet()) {
+                body.put(key, map.get(plantName + "." + key));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -13,15 +13,18 @@ public class Plant {
         this.plantName = plantName;
     }
 
-    public MeasuredVariable temperature() {
-        return temperature;
-    }
+    public MeasuredVariable temperature() {return temperature;}
+
     public MeasuredVariable luminosity() {
         return luminosity;
     }
+
     public MeasuredVariable humidity() {
         return humidity;
     }
-    public String getName() {return plantName; }
+
+    public String getName() {
+        return plantName;
+    }
 
 }

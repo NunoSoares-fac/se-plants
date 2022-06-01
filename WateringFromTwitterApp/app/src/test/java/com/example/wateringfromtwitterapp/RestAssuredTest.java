@@ -2,7 +2,6 @@ package com.example.wateringfromtwitterapp;
 
 import org.junit.Test;
 
-import io.restassured.RestAssured;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -12,6 +11,6 @@ import io.restassured.RestAssured;
 public class RestAssuredTest {
     @Test
     public void testRestAssuredSmokeTest() {
-        RestAssured.get("https://google.com").then().statusCode(200);
+
     }
 }

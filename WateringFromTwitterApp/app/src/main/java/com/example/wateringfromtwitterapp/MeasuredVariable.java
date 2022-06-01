@@ -19,13 +19,6 @@ public class MeasuredVariable {
 
     public void setValue(double value) {
         this.value = value;
-        if (!isForcedActive) {
-            if (value < threshold) {
-                isActive = true;
-            } else {
-                isActive = false;
-            }
-        }
     }
 
     public double getThreshold() {
@@ -34,11 +27,6 @@ public class MeasuredVariable {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
-        if (value < threshold) {
-            isActive = true;
-        } else if (!isForcedActive) {
-            isActive = false;
-        }
     }
 
     public boolean isActive() {
@@ -55,14 +43,5 @@ public class MeasuredVariable {
 
     public void toggleForcedActive() {
         isForcedActive = !isForcedActive;
-        if (!isForcedActive) {
-            if (value < threshold) {
-                isActive = true;
-            } else {
-                isActive = false;
-            }
-        } else {
-            isActive = true;
-        }
     }
 }

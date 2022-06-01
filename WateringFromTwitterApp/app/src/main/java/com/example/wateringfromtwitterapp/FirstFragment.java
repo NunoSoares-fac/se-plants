@@ -34,8 +34,9 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         DataBroker.get().loadPlant("plant1");
         DataBroker.get().loadPlant("plant2");
+        FirstFragment.updateDisplayedValues(view, DataBroker.get().getPlant("plant1"));
 
-        new Timer().scheduleAtFixedRate(new RefreshDataTask(view), 0, 3000);
+        new Timer().scheduleAtFixedRate(new RefreshDataTask(view), 3000, 2000);
 
         binding.checkboxTemperature.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +48,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                updateDisplayedActiveFlag(view, plant);
+                updateDisplayedActiveFlag(rootView, plant);
             }
         });
 
@@ -61,7 +62,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                updateDisplayedActiveFlag(view, plant);
+                updateDisplayedActiveFlag(rootView, plant);
             }
         });
 
@@ -75,7 +76,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                updateDisplayedActiveFlag(view, plant);
+                updateDisplayedActiveFlag(rootView, plant);
             }
         });
 
@@ -144,7 +145,7 @@ public class FirstFragment extends Fragment {
                     errorMessageTextView.setText(R.string.error_invalid_plant_name);
                 } else {
                     String newPlantName = newPlantNameText.toString().trim();
-                    FirstFragment.updateDisplayedValues(view, DataBroker.get().getPlant(newPlantName));
+                    FirstFragment.updateDisplayedValues(rootView, DataBroker.get().getPlant(newPlantName));
                 }
             }
         });
