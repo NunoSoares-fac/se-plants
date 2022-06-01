@@ -12,7 +12,9 @@
 #define DHTdataPin 2
 
 #define LDRAnalogicIn A0
-#define LedDigitalPWD 8
+#define DigitalLed1 8
+#define DigitalLed2 3
+#define DigitalLed3 5
 
 DHT dht = DHT(DHTdataPin, DHTType);
 
@@ -20,13 +22,13 @@ DHT dht = DHT(DHTdataPin, DHTType);
 WiFiUDP UDP;
 unsigned int localUdpPort = 4210;
 
-#define packetBufferSize 12
+#define packetBufferSize 35
 char packetBuffer[packetBufferSize];
 
-#define replyBufferSize 88
+#define replyBufferSize 75
 char replyBuffer[replyBufferSize];
 
-IPAddress remoteIP(192,168,138,173);
+IPAddress remoteIP(192,168,99,173);
 #define remotePort 41234
 
 void setup() {
@@ -34,8 +36,15 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
 
-  pinMode(LedDigitalPWD, OUTPUT);
-  digitalWrite(LedDigitalPWD,LOW);
+  pinMode(DigitalLed1, OUTPUT);
+  digitalWrite(DigitalLed1,LOW);
+
+  pinMode(DigitalLed2, OUTPUT);
+  digitalWrite(DigitalLed2,LOW);
+
+  pinMode(DigitalLed3, OUTPUT);
+  digitalWrite(DigitalLed3,LOW);
+  
   dht.begin();
 
   // Begin WiFi
@@ -62,19 +71,36 @@ char humStr[8];
 char temStr[8];
 
 void loop() {
+  unsigned long time = millis();
+  
   int packetSize = UDP.parsePacket();
   if(packetSize) {
     UDP.read(packetBuffer, packetBufferSize);
+
+    packetBuffer[34] = '\0';
+    Serial.println(packetBuffer);
     
-    char ledAction = packetBuffer[8];
-    if(ledAction == '0') {
-      digitalWrite(LedDigitalPWD,LOW);
-    } else if(ledAction == '1') {
-      digitalWrite(LedDigitalPWD,HIGH);
+    char led1 = packetBuffer[9];
+    if(led1 == '0') {
+      digitalWrite(DigitalLed1,LOW);
+    } else if(led1 == '1') {
+      digitalWrite(DigitalLed1,HIGH);
     }
 
-    Serial.print("ledAction: ");
-    Serial.println(ledAction);
+    char led2 = packetBuffer[20];
+    if(led2 == '0') {
+      digitalWrite(DigitalLed2,LOW);
+    } else if(led2 == '1') {
+      digitalWrite(DigitalLed2,HIGH);
+    }
+
+    char led3 = packetBuffer[31];
+    if(led3 == '0') {
+      digitalWrite(DigitalLed3,LOW);
+    } else if(led1 == '1') {
+      digitalWrite(DigitalLed3,HIGH);
+    }
+    
   }
   
   lightness = analogRead(LDRAnalogicIn);
@@ -83,7 +109,7 @@ void loop() {
   dtostrf(dht.readTemperature(), 5, 2, temStr);
   
   sprintf(replyBuffer,
-    "{\"plant1\":\{\"temperature\":\"%s\",\"humidity\":\"%s\",\"luminosity\":\"%d\"}}", 
+    "\{\"temperature\":\"%s\",\"humidity\":\"%s\",\"luminosity\":\"%d\"\}",  
     temStr, 
     humStr, 
     lightness);
@@ -93,7 +119,9 @@ void loop() {
   UDP.endPacket();
 
   Serial.println(replyBuffer);
-  
-  delay(500);
+
+  while(millis() - time <= 500) {
+    delay(50);
+  }
 
 }
