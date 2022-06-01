@@ -15,7 +15,7 @@ function update_led_state() {
   let led = JSON.parse(data);
   let info_state = JSON.parse(info);
   let threshold_data = JSON.parse(thresholds);
-  console.log(led);
+
   //Planta 1
   if (info_state.plant1.humidity >= threshold_data.plant1.humidity_upper ||
     info_state.plant1.humidity < threshold_data.plant1.humidity_lower) plant1.led.led1 = "1";
@@ -51,7 +51,7 @@ server.on('error', (err) => {
 });
 
 server.on('message', (msg, rinfo) => {
-  //console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
   //Code for debugging purposes
   //var obj = JSON.parse(`${msg}`);
