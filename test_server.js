@@ -11,6 +11,7 @@ function update_led_state() {
   let data = fs.readFileSync('led_state.json');
   let info = fs.readFileSync('info.json');
   let thresholds = fs.readFileSync('threshold.json');
+  
   let led = JSON.parse(data);
   let info_state = JSON.parse(info);
   let threshold_data = JSON.parse(thresholds);
@@ -62,6 +63,20 @@ server.on('message', (msg, rinfo) => {
 
 server.on('listening', () => {
   const address = server.address();
+  var current_state;
+  let data = fs.readFileSync('led_state.json');
+  let info = fs.readFileSync('info.json');
+  let thresholds = fs.readFileSync('threshold.json');
+  
+  let led = JSON.parse(data);
+  let info_state = JSON.parse(info);
+  let threshold_data = JSON.parse(thresholds);
+  current_state = "My current status is:" +
+      "\nHumidity: " + info_state.plant1.humidity + 
+      "\nLuminosity: " + info_state.plant1.luminosity +
+      "\nTemperature: " + info_state.plant1.temperature
+  
+  console.log(current_state)
   console.log(`server listening ${address.address}:${address.port}`);
 });
 

@@ -11,6 +11,20 @@ app.get('/info', function (req, res) {
    });
 })
 
+app.get('/infoL', function (req, res) {
+   fs.readFile( __dirname + "/" + "led_state.json", 'utf8', function (err, data) {
+      console.log( data );
+      res.end( data );
+   });
+})
+
+app.get('/infoT', function (req, res) {
+   fs.readFile( __dirname + "/" + "threshold.json", 'utf8', function (err, data) {
+      console.log( data );
+      res.end( data );
+   });
+})
+
 app.patch('/updateT', function (req, res) {
    console.log(req.body)
    let content = req.body;
@@ -49,8 +63,6 @@ app.patch('/update', function (req, res) {
       console.log(err);
    }
 });
-
-
 
 var server = app.listen(8081, function () {
    var host = server.address().address

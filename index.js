@@ -2,9 +2,22 @@ require("dotenv").config();
 const twit = require('./twit');
 var fs = require("fs");
 
+
 //Test code to check if I can send tweets periodically AND IT WORKS!!!
 setInterval(function () {
-  twit.post('statuses/update', { status: 'The random Number is '+ aux}, function (err, data, response) {
+  let current_state;
+  let data = fs.readFileSync('led_state.json');
+  let info = fs.readFileSync('info.json');
+  
+  let led = JSON.parse(data);
+  let info_state = JSON.parse(info);
+
+  current_state = "My current status is:" +
+      "\nHumidity: " + info_state.plant1.humidity + 
+      "\nLuminosity: " + info_state.plant1.luminosity +
+      "\nTemperature: " + info_state.plant1.temperature
+  
+  twit.post('statuses/update', { status: current_state}, function (err, data, response) {
       console.log(data)
   });
   
