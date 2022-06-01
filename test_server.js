@@ -17,29 +17,29 @@ function update_led_state() {
   let threshold_data = JSON.parse(thresholds);
 
   //Planta 1
-  if (info_state.plant1.humidity >= threshold_data.plant1.humidity_upper ||
-    info_state.plant1.humidity < threshold_data.plant1.humidity_lower) led.plant1.led1 = "1";
+  if (parseInt(info_state.plant1.humidity) >= parseInt(threshold_data.plant1.humidity_upper) ||
+    parseInt(info_state.plant1.humidity) < parseInt(threshold_data.plant1.humidity_lower)) led.plant1.led1 = "1";
   else led.plant1.led1 = "0";
 
-  if (info_state.plant1.luminosity >= threshold_data.plant1.luminosity_upper ||
-    info_state.plant1.luminosity < threshold_data.plant1.luminosity_lower) led.plant1.led2 = "1";
+  if (parseInt(info_state.plant1.luminosity) >= parseInt(threshold_data.plant1.luminosity_upper) ||
+    parseInt(info_state.plant1.luminosity) < parseInt(threshold_data.plant1.luminosity_lower)) led.plant1.led2 = "1";
   else led.plant1.led2 = "0";
 
-  if (info_state.plant1.temperature >= threshold_data.plant1.temperature_upper ||
-    info_state.plant1.temperature < threshold_data.plant1.temperature_lower) led.plant1.led3 = "1";
+  if (parseInt(info_state.plant1.temperature) >= parseInt(threshold_data.plant1.temperature_upper) ||
+    parseInt(info_state.plant1.temperature) < parseInt(threshold_data.plant1.temperature_lower)) led.plant1.led3 = "1";
   else led.plant1.led3 = "0";
 
   //Planta 2
-  if (info_state.plant2.humidity >= threshold_data.plant1.humidity_upper ||
-    info_state.plant2.humidity < threshold_data.plant1.humidity_lower) led.plant2.led1 = "1";
+  if (parseInt(info_state.plant2.humidity) >= parseInt(threshold_data.plant1.humidity_upper) ||
+    parseInt(info_state.plant2.humidity) < parseInt(threshold_data.plant1.humidity_lower)) led.plant2.led1 = "1";
   else led.plant2.led1 = "0";
 
-  if (info_state.plant2.luminosity >= threshold_data.plant1.luminosity_upper ||
-    info_state.plant2.luminosity < threshold_data.plant1.luminosity_lower) led.plant2.led2 = "1";
+  if (parseInt(info_state.plant2.luminosity) >= parseInt(threshold_data.plant1.luminosity_upper) ||
+    parseInt(info_state.plant2.luminosity) < parseInt(threshold_data.plant1.luminosity_lower)) led.plant2.led2 = "1";
   else led.plant2.led2 = "0";
 
-  if (info_state.plant2.temperature >= threshold_data.plant1.temperature_upper ||
-    info_state.plant2.temperature < threshold_data.plant1.temperature_lower) led.plant2.led3 = "1";
+  if (parseInt(info_state.plant2.temperature) >= parseInt(threshold_data.plant1.temperature_upper) ||
+    parseInt(info_state.plant2.temperature) < parseInt(threshold_data.plant1.temperature_lower)) led.plant2.led3 = "1";
   else led.plant2.led3 = "0";
 
   fs.writeFileSync('led_state.json', JSON.stringify(led));
