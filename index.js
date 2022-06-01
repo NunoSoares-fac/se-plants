@@ -21,8 +21,8 @@ setInterval(function () {
     "\nLuminosity: " + info_state.plant2.luminosity +
     "\nTemperature: " + info_state.plant2.temperature;
   
-  /*twit.post('statuses/update', { status: current_state}, function (err, data, response) {
+  twit.post('statuses/update', { status: current_state}, function (err, data, response) {
       console.log(data)
-  });*/
+  });
   
 }, 10000);
