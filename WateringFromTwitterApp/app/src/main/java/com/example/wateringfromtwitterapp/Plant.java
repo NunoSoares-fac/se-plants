@@ -4,11 +4,13 @@ public class Plant {
     private MeasuredVariable temperature;
     private MeasuredVariable luminosity;
     private MeasuredVariable humidity;
+    private final String plantName;
 
-    Plant() {
+    Plant(String plantName) {
         temperature = new MeasuredVariable();
         luminosity = new MeasuredVariable();
         humidity = new MeasuredVariable();
+        this.plantName = plantName;
     }
 
     public MeasuredVariable temperature() {
@@ -20,4 +22,6 @@ public class Plant {
     public MeasuredVariable humidity() {
         return humidity;
     }
+    public String getName() {return plantName; }
+
 }

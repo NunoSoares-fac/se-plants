@@ -17,4 +17,5 @@
     <string name="hint_plant_name">Plant Name</string>
 
     <string name="error_invalid_threshold">ERROR: Invalid threshold value(s), must be numeric</string>
+    <string name="error_invalid_plant_name">ERROR: Invalid plant hostname. Keeping same plant</string>
 </resources>

@@ -33,13 +33,9 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         DataBroker.get().loadPlant("plant1");
+        DataBroker.get().loadPlant("plant2");
 
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        }, 0, 3000);
+        new Timer().scheduleAtFixedRate(new RefreshDataTask(view), 0, 3000);
 
         binding.checkboxTemperature.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,14 +47,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                boolean isActuatorActive = plant.temperature().isActive();
-                String activeFlag;
-                if (isActuatorActive) {
-                    activeFlag = "true";
-                } else {
-                    activeFlag = "false";
-                }
-                ((TextView) rootView.findViewById(R.id.temperature_actuator)).setText(activeFlag);
+                updateDisplayedActiveFlag(view, plant);
             }
         });
 
@@ -72,14 +61,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                boolean isActuatorActive = plant.luminosity().isActive();
-                String activeFlag;
-                if (isActuatorActive) {
-                    activeFlag = "true";
-                } else {
-                    activeFlag = "false";
-                }
-                ((TextView) rootView.findViewById(R.id.luminosity_actuator)).setText(activeFlag);
+                updateDisplayedActiveFlag(view, plant);
             }
         });
 
@@ -93,14 +75,7 @@ public class FirstFragment extends Fragment {
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
 
-                boolean isActuatorActive = plant.humidity().isActive();
-                String activeFlag;
-                if (isActuatorActive) {
-                    activeFlag = "true";
-                } else {
-                    activeFlag = "false";
-                }
-                ((TextView) rootView.findViewById(R.id.humidity_actuator)).setText(activeFlag);
+                updateDisplayedActiveFlag(view, plant);
             }
         });
 
@@ -147,31 +122,7 @@ public class FirstFragment extends Fragment {
 
                     Plant plant = DataBroker.get().changeThresholds(plantName, newTemperatureThreshold, newLuminosityThreshold, newHumidityThreshold);
 
-                    String activeFlag;
-                    if (plant.temperature().isActive()) {
-                        activeFlag = "true";
-                    } else {
-                        activeFlag = "false";
-                    }
-                    ((TextView) rootView.findViewById(R.id.temperature_actuator)).setText(activeFlag);
-                    ((TextView) rootView.findViewById(R.id.temperature_threshold)).setText(String.valueOf(plant.temperature().getThreshold()));
-
-                    if (plant.luminosity().isActive()) {
-                        activeFlag = "true";
-                    } else {
-                        activeFlag = "false";
-                    }
-                    ((TextView) rootView.findViewById(R.id.luminosity_actuator)).setText(activeFlag);
-                    ((TextView) rootView.findViewById(R.id.luminosity_threshold)).setText(String.valueOf(plant.luminosity().getThreshold()));
-
-                    if (plant.humidity().isActive()) {
-                        activeFlag = "true";
-                    } else {
-                        activeFlag = "false";
-                    }
-                    ((TextView) rootView.findViewById(R.id.humidity_actuator)).setText(activeFlag);
-                    ((TextView) rootView.findViewById(R.id.humidity_threshold)).setText(String.valueOf(plant.humidity().getThreshold()));
-
+                    FirstFragment.updateDisplayedValues(rootView, plant);
                 } catch (NumberFormatException e) {
                     errorMessageTextView.setText(R.string.error_invalid_threshold);
                 }
@@ -188,8 +139,13 @@ public class FirstFragment extends Fragment {
                 errorMessageTextView.setText(null);
 
                 //Change Plant
-                TextView plantNameTextView = (TextView) rootView.findViewById(R.id.plant_name);
-                String plantName = String.valueOf(plantNameTextView.getText());
+                Editable newPlantNameText = ((EditText) rootView.findViewById(R.id.input_change_plant)).getText();
+                if (newPlantNameText == null || newPlantNameText.toString().trim().equals("")) {
+                    errorMessageTextView.setText(R.string.error_invalid_plant_name);
+                } else {
+                    String newPlantName = newPlantNameText.toString().trim();
+                    FirstFragment.updateDisplayedValues(view, DataBroker.get().getPlant(newPlantName));
+                }
             }
         });
     }
@@ -198,6 +154,49 @@ public class FirstFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public static void updateDisplayedValues(View view, Plant plant) {
+        ((TextView) view.findViewById(R.id.plant_name)).setText(plant.getName());
+        String temperature = String.valueOf(plant.temperature().getValue());
+        String luminosity = String.valueOf(plant.luminosity().getValue());
+        String humidity = String.valueOf(plant.humidity().getValue());
+        ((TextView) view.findViewById(R.id.temperature)).setText(temperature);
+        ((TextView) view.findViewById(R.id.luminosity)).setText(luminosity);
+        ((TextView) view.findViewById(R.id.humidity)).setText(humidity);
+
+        String temperatureThreshold = String.valueOf(plant.temperature().getThreshold());
+        String luminosityThreshold = String.valueOf(plant.luminosity().getThreshold());
+        String humidityThreshold = String.valueOf(plant.humidity().getThreshold());
+        ((TextView) view.findViewById(R.id.temperature_threshold)).setText(temperatureThreshold);
+        ((TextView) view.findViewById(R.id.luminosity_threshold)).setText(luminosityThreshold);
+        ((TextView) view.findViewById(R.id.humidity_threshold)).setText(humidityThreshold);
+
+        FirstFragment.updateDisplayedActiveFlag(view, plant);
+    }
+
+    public static void updateDisplayedActiveFlag(View view, Plant plant) {
+        String activeFlag;
+        if (plant.temperature().isActive()) {
+            activeFlag = "true";
+        } else {
+            activeFlag = "false";
+        }
+        ((TextView) view.findViewById(R.id.temperature_actuator)).setText(activeFlag);
+
+        if (plant.luminosity().isActive()) {
+            activeFlag = "true";
+        } else {
+            activeFlag = "false";
+        }
+        ((TextView) view.findViewById(R.id.luminosity_actuator)).setText(activeFlag);
+
+        if (plant.humidity().isActive()) {
+            activeFlag = "true";
+        } else {
+            activeFlag = "false";
+        }
+        ((TextView) view.findViewById(R.id.humidity_actuator)).setText(activeFlag);
     }
 }
 
@@ -216,5 +215,6 @@ class RefreshDataTask extends TimerTask {
         Plant plant = DataBroker.get().updateMeasurements(plantName);
 
         //Update UI
+        FirstFragment.updateDisplayedValues(rootView, plant);
     }
 }

@@ -22,11 +22,11 @@ public class PlantTest {
 
     @Test
     public void testUpdateMeasurements() {
-        Plant plant = new Plant();
+        Plant plant = new Plant("");
     }
 
     @Test
     public void testUpdateLuminosityThreshold() {
-        Plant plant = new Plant();
+        Plant plant = new Plant("");
     }
 }

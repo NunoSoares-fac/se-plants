@@ -19,6 +19,13 @@ public class MeasuredVariable {
 
     public void setValue(double value) {
         this.value = value;
+        if (!isForcedActive) {
+            if (value < threshold) {
+                isActive = true;
+            } else {
+                isActive = false;
+            }
+        }
     }
 
     public double getThreshold() {
