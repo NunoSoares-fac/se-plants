@@ -18,29 +18,29 @@ function update_led_state() {
 
   //Planta 1
   if (info_state.plant1.humidity >= threshold_data.plant1.humidity_upper ||
-    info_state.plant1.humidity < threshold_data.plant1.humidity_lower) plant1.led.led1 = "1";
-  else plant1.led.led1 = "0";
+    info_state.plant1.humidity < threshold_data.plant1.humidity_lower) led.plant1.led1 = "1";
+  else led.plant1.led1 = "0";
 
   if (info_state.plant1.luminosity >= threshold_data.plant1.luminosity_upper ||
-    info_state.plant1.luminosity < threshold_data.plant1.luminosity_lower) plant1.led.led2 = "1";
-  else plant1.led.led2 = "0";
+    info_state.plant1.luminosity < threshold_data.plant1.luminosity_lower) led.plant1.led2 = "1";
+  else led.plant1.led2 = "0";
 
   if (info_state.plant1.temperature >= threshold_data.plant1.temperature_upper ||
-    info_state.plant1.temperature < threshold_data.plant1.temperature_lower) plant1.led.led3 = "1";
-  else plant1.led.led3 = "0";
+    info_state.plant1.temperature < threshold_data.plant1.temperature_lower) led.plant1.led3 = "1";
+  else led.plant1.led3 = "0";
 
   //Planta 2
   if (info_state.plant2.humidity >= threshold_data.plant1.humidity_upper ||
-    info_state.plant2.humidity < threshold_data.plant1.humidity_lower) plant2.led.led1 = "1";
-  else plant2.led.led1 = "0";
+    info_state.plant2.humidity < threshold_data.plant1.humidity_lower) led.plant2.led1 = "1";
+  else led.plant2.led1 = "0";
 
   if (info_state.plant2.luminosity >= threshold_data.plant1.luminosity_upper ||
-    info_state.plant2.luminosity < threshold_data.plant1.luminosity_lower) plant2.led.led2 = "1";
-  else plant2.led.led2 = "0";
+    info_state.plant2.luminosity < threshold_data.plant1.luminosity_lower) led.plant2.led2 = "1";
+  else led.plant2.led2 = "0";
 
   if (info_state.plant2.temperature >= threshold_data.plant1.temperature_upper ||
-    info_state.plant2.temperature < threshold_data.plant1.temperature_lower) plant2.led.led3 = "1";
-  else plant2.led.led3 = "0";
+    info_state.plant2.temperature < threshold_data.plant1.temperature_lower) led.plant2.led3 = "1";
+  else led.plant2.led3 = "0";
 
   fs.writeFileSync('led_state.json', JSON.stringify(led));
 }
