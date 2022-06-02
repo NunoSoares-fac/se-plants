@@ -1,49 +1,10 @@
 var dgram = require('dgram');
+var lc = require('./led_control')
 var fs = require("fs")
 
 const server = dgram.createSocket('udp4');
 var ips = [];
-/**
- * 
- Function responsible for updating led_state.json
- */
-function update_led_state() {
-  let data = fs.readFileSync('led_state.json');
-  let info = fs.readFileSync('info.json');
-  let thresholds = fs.readFileSync('threshold.json');
-  
-  let led = JSON.parse(data);
-  let info_state = JSON.parse(info);
-  let threshold_data = JSON.parse(thresholds);
 
-  //Planta 1
-  if (parseInt(info_state.plant1.humidity) >= parseInt(threshold_data.plant1.humidity_upper) ||
-    parseInt(info_state.plant1.humidity) < parseInt(threshold_data.plant1.humidity_lower)) led.plant1.led1 = "1";
-  else led.plant1.led1 = "0";
-
-  if (parseInt(info_state.plant1.luminosity) >= parseInt(threshold_data.plant1.luminosity_upper) ||
-    parseInt(info_state.plant1.luminosity) < parseInt(threshold_data.plant1.luminosity_lower)) led.plant1.led2 = "1";
-  else led.plant1.led2 = "0";
-
-  if (parseInt(info_state.plant1.temperature) >= parseInt(threshold_data.plant1.temperature_upper) ||
-    parseInt(info_state.plant1.temperature) < parseInt(threshold_data.plant1.temperature_lower)) led.plant1.led3 = "1";
-  else led.plant1.led3 = "0";
-
-  //Planta 2
-  if (parseInt(info_state.plant2.humidity) >= parseInt(threshold_data.plant2.humidity_upper) ||
-    parseInt(info_state.plant2.humidity) < parseInt(threshold_data.plant2.humidity_lower)) led.plant2.led1 = "1";
-  else led.plant2.led1 = "0";
-
-  if (parseInt(info_state.plant2.luminosity) >= parseInt(threshold_data.plant2.luminosity_upper) ||
-    parseInt(info_state.plant2.luminosity) < parseInt(threshold_data.plant2.luminosity_lower)) led.plant2.led2 = "1";
-  else led.plant2.led2 = "0";
-
-  if (parseInt(info_state.plant2.temperature) >= parseInt(threshold_data.plant2.temperature_upper) ||
-    parseInt(info_state.plant2.temperature) < parseInt(threshold_data.plant2.temperature_lower)) led.plant2.led3 = "1";
-  else led.plant2.led3 = "0";
-
-  fs.writeFileSync('led_state.json', JSON.stringify(led));
-}
 
 server.on('error', (err) => {
   console.log(`server error:\n${err.stack}`);
@@ -86,7 +47,7 @@ server.on('message', (msg, rinfo) => {
   
   fs.writeFileSync('info.json', JSON.stringify(info_json));
 
-  update_led_state()
+  lc.update_led_state()
 
   //Get led state from the json file
   let data = fs.readFileSync('led_state.json');

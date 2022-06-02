@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
-var fs = require("fs");
+var lc = require('./led_control')
+var fs = require("fs")
 
 app.use(express.json());
 
@@ -54,6 +55,8 @@ app.patch('/updateT', function (req, res) {
    //Code for debugging purposes
    //data = fs.readFileSync('threshold.json');
    //console.log(JSON.parse(data));
+   
+   lc.update_led_state();
 
    res.send({ 200: 'Success' });
 });
@@ -61,16 +64,22 @@ app.patch('/updateT', function (req, res) {
 app.patch('/update', function (req, res) {
    console.log(req.body)
    let content = req.body;
-   try {
-      fs.readFile('info.json', 'utf8', function () {
-         fs.writeFile('info.json', JSON.stringify(content), function(err, result) {
-            if (err) console.log('error', err);
-            else res.send({ 200: 'Success' });
-         });
-      });
-   } catch (err) {
-      console.log(err);
-   }
+   let data = fs.readFileSync('led_forced.json');
+   let forced_leds = JSON.parse(data);
+   
+   forced_leds.plant1.led1 = content.plant1.led1;
+   forced_leds.plant1.led2 = content.plant1.led2;
+   forced_leds.plant1.led3 = content.plant1.led3;
+   
+   forced_leds.plant2.led1 = content.plant2.led1;
+   forced_leds.plant2.led2 = content.plant2.led2;
+   forced_leds.plant2.led3 = content.plant2.led3;
+   
+   fs.writeFileSync('led_forced.json', JSON.stringify(forced_leds));
+   
+   lc.update_led_state();
+
+   res.send({ 200: 'Success' });
 });
 
 var server = app.listen(8081, function () {
