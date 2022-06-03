@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="100dp"
+    android:stretchColumns="1" >
+
+    <TableRow>
+        <TextView
+            android:text="@string/label_thresholds"
+            android:background="@color/white"/>
+        <TextView
+            android:text="@string/label_current"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+
+        <TextView
+            android:text="@string/label_change_to"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+    </TableRow>
+
+    <TableRow android:id="@+id/upper_threshold">
+        <TextView
+            android:text="@string/label_upper"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+        <TextView
+            android:id="@+id/current_upper"
+            android:text="-1.0"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+
+        <EditText
+            android:id="@+id/input_upper"
+            android:hint="@string/hint_new_threshold"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:textColorHint="#757575"
+            android:textSize="12sp" />
+    </TableRow>
+
+    <TableRow android:id="@+id/lower_threshold">
+        <TextView
+            android:text="@string/label_lower"
+            android:textSize="12sp"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+        <TextView
+            android:id="@+id/current_lower"
+            android:text="-1.0"
+            android:textAlignment="center"
+            android:background="@color/white"/>
+
+        <EditText
+            android:id="@+id/input_lower"
+            android:hint="@string/hint_new_threshold"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:textColorHint="#757575"
+            android:textSize="12sp" />
+    </TableRow>
+</TableLayout>

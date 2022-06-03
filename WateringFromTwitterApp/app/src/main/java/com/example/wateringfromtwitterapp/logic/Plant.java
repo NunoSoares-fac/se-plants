@@ -1,4 +1,4 @@
-package com.example.wateringfromtwitterapp;
+package com.example.wateringfromtwitterapp.logic;
 
 public class Plant {
     private MeasuredVariable temperature;

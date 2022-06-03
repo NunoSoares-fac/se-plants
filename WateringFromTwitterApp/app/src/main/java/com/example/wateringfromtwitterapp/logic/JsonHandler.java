@@ -1,4 +1,4 @@
-package com.example.wateringfromtwitterapp;
+package com.example.wateringfromtwitterapp.logic;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class JsonHandler {
 
@@ -61,7 +60,7 @@ public class JsonHandler {
             for (String plantName: plants) {
                 body.put(plantName, new JSONObject());
                 for (String key: map.keySet()) {
-                    String variable = key.split("\\.")[1].substring(1);
+                    String variable = key.split("\\.")[1];
                     body.getJSONObject(plantName).put(variable, map.get(plantName + "." + variable));
                 }
             }

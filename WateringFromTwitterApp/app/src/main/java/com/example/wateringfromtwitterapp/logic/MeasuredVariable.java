@@ -1,14 +1,16 @@
-package com.example.wateringfromtwitterapp;
+package com.example.wateringfromtwitterapp.logic;
 
 public class MeasuredVariable {
     private double value;
-    private double threshold;
+    private double upperThreshold;
+    private double lowerThreshold;
     private boolean isActive;
     private boolean isForcedActive;
 
     public MeasuredVariable() {
         value = -1;
-        threshold = -1;
+        upperThreshold = -1;
+        lowerThreshold = -1;
         isActive = false;
         isForcedActive = false;
     }
@@ -19,14 +21,6 @@ public class MeasuredVariable {
 
     public void setValue(double value) {
         this.value = value;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
     }
 
     public boolean isActive() {
@@ -43,5 +37,21 @@ public class MeasuredVariable {
 
     public void toggleForcedActive() {
         isForcedActive = !isForcedActive;
+    }
+
+    public double getUpperThreshold() {
+        return upperThreshold;
+    }
+
+    public void setUpperThreshold(double upperThreshold) {
+        this.upperThreshold = upperThreshold;
+    }
+
+    public double getLowerThreshold() {
+        return lowerThreshold;
+    }
+
+    public void setLowerThreshold(double lowerThreshold) {
+        this.lowerThreshold = lowerThreshold;
     }
 }

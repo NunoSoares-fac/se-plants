@@ -1,18 +1,24 @@
-package com.example.wateringfromtwitterapp;
+package com.example.wateringfromtwitterapp.ui;
 
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.wateringfromtwitterapp.R;
 import com.example.wateringfromtwitterapp.databinding.FragmentFirstBinding;
+import com.example.wateringfromtwitterapp.logic.DataBroker;
+import com.example.wateringfromtwitterapp.logic.Plant;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,8 +41,9 @@ public class FirstFragment extends Fragment {
         DataBroker.get().loadPlant("plant1");
         DataBroker.get().loadPlant("plant2");
         FirstFragment.updateDisplayedValues(view, DataBroker.get().getPlant("plant1"));
+        FirstFragment.updateCheckboxes(view, DataBroker.get().getPlant("plant1"));
 
-        new Timer().scheduleAtFixedRate(new RefreshDataTask(view), 3000, 2000);
+        new Timer().scheduleAtFixedRate(new RefreshDataTask(view), 2000, 2000);
 
         binding.checkboxTemperature.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,9 +51,9 @@ public class FirstFragment extends Fragment {
                 View rootView = view.getRootView();
                 TextView plantNameTextView = (TextView) rootView.findViewById(R.id.plant_name);
                 String plantName = String.valueOf(plantNameTextView.getText());
-                Plant plant = DataBroker.get().changeTemperatureActuatorForcedFlag(plantName);
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
+                Plant plant = DataBroker.get().changeTemperatureActuatorForcedFlag(plantName);
 
                 updateDisplayedActiveFlag(rootView, plant);
             }
@@ -58,9 +65,9 @@ public class FirstFragment extends Fragment {
                 View rootView = view.getRootView();
                 TextView plantNameTextView = (TextView) rootView.findViewById(R.id.plant_name);
                 String plantName = String.valueOf(plantNameTextView.getText());
-                Plant plant = DataBroker.get().changeLuminosityActuatorForcedFlag(plantName);
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
+                Plant plant = DataBroker.get().changeLuminosityActuatorForcedFlag(plantName);
 
                 updateDisplayedActiveFlag(rootView, plant);
             }
@@ -72,9 +79,10 @@ public class FirstFragment extends Fragment {
                 View rootView = view.getRootView();
                 TextView plantNameTextView = (TextView) rootView.findViewById(R.id.plant_name);
                 String plantName = String.valueOf(plantNameTextView.getText());
-                Plant plant = DataBroker.get().changeHumidityActuatorForcedFlag(plantName);
                 TextView errorMessageTextView = (TextView) rootView.findViewById(R.id.error_message);
                 errorMessageTextView.setText(null);
+                Plant plant = DataBroker.get().changeHumidityActuatorForcedFlag(plantName);
+
 
                 updateDisplayedActiveFlag(rootView, plant);
             }
@@ -90,45 +98,32 @@ public class FirstFragment extends Fragment {
                 errorMessageTextView.setText(null);
 
                 try {
-                    Editable newTemperatureThresholdText = ((EditText) rootView.findViewById(R.id.input_temperature_threshold)).getText();
-                    String newTemperatureThreshold = null;
-                    if (newTemperatureThresholdText != null) {
-                        newTemperatureThreshold = newTemperatureThresholdText.toString().trim();
-                        if (newTemperatureThreshold.equals("")) {
-                            newTemperatureThreshold = null;
-                        } else {
-                            Double.parseDouble(newTemperatureThreshold);
-                        }
-                    }
-                    Editable newLuminosityThresholdText = ((EditText) rootView.findViewById(R.id.input_luminosity_threshold)).getText();
-                    String newLuminosityThreshold = null;
-                    if (newLuminosityThresholdText != null) {
-                        newLuminosityThreshold = newLuminosityThresholdText.toString().trim();
-                        if (newLuminosityThreshold.equals("")) {
-                            newLuminosityThreshold = null;
-                        } else {
-                            Double.parseDouble(newLuminosityThreshold);
-                        }
-                    }
-                    Editable newHumidityThresholdText = ((EditText) rootView.findViewById(R.id.input_humidity_threshold)).getText();
-                    String newHumidityThreshold = null;
-                    if (newHumidityThresholdText != null) {
-                        newHumidityThreshold = newHumidityThresholdText.toString().trim();
-                        if (newHumidityThreshold.equals("")) {
-                            newHumidityThreshold = null;
-                        } else {
-                            Double.parseDouble(newHumidityThreshold);
-                        }
-                    }
+                    View temperatureThresholdTable = rootView.findViewById(R.id.temperature_layout);
+                    View luminosityThresholdTable = rootView.findViewById(R.id.luminosity_layout);
+                    View humidityThresholdTable = rootView.findViewById(R.id.humidity_layout);
 
-                    Plant plant = DataBroker.get().changeThresholds(plantName, newTemperatureThreshold, newLuminosityThreshold, newHumidityThreshold);
+                    Editable newTemperatureUpperThresholdText = ((EditText) temperatureThresholdTable.findViewById(R.id.input_upper)).getText();
+                    Editable newTemperatureLowerThresholdText = ((EditText) temperatureThresholdTable.findViewById(R.id.input_lower)).getText();
+                    Editable newLuminosityUpperThresholdText = ((EditText) luminosityThresholdTable.findViewById(R.id.input_upper)).getText();
+                    Editable newLuminosityLowerThresholdText = ((EditText) luminosityThresholdTable.findViewById(R.id.input_lower)).getText();
+                    Editable newHumidityUpperThresholdText = ((EditText) humidityThresholdTable.findViewById(R.id.input_upper)).getText();
+                    Editable newHumidityLowerThresholdText = ((EditText) humidityThresholdTable.findViewById(R.id.input_lower)).getText();
 
+                    Double newTemperatureUpperThreshold = convertThresholdText(newTemperatureUpperThresholdText);
+                    Double newTemperatureLowerThreshold = convertThresholdText(newTemperatureLowerThresholdText);
+                    Double newLuminosityUpperThreshold  = convertThresholdText(newLuminosityUpperThresholdText);
+                    Double newLuminosityLowerThreshold = convertThresholdText(newLuminosityLowerThresholdText);
+                    Double newHumidityUpperThreshold = convertThresholdText(newHumidityUpperThresholdText);
+                    Double newHumidityLowerThreshold = convertThresholdText(newHumidityLowerThresholdText);
+
+                    Plant plant = DataBroker.get().changeThresholds(plantName,
+                                                                    newTemperatureUpperThreshold, newTemperatureLowerThreshold,
+                                                                    newLuminosityUpperThreshold, newLuminosityLowerThreshold,
+                                                                    newHumidityUpperThreshold, newHumidityLowerThreshold);
                     FirstFragment.updateDisplayedValues(rootView, plant);
                 } catch (NumberFormatException e) {
                     errorMessageTextView.setText(R.string.error_invalid_threshold);
                 }
-
-
             }
         });
 
@@ -141,11 +136,13 @@ public class FirstFragment extends Fragment {
 
                 //Change Plant
                 Editable newPlantNameText = ((EditText) rootView.findViewById(R.id.input_change_plant)).getText();
-                if (newPlantNameText == null || newPlantNameText.toString().trim().equals("")) {
+                if (newPlantNameText == null || newPlantNameText.toString().trim().equals("") || DataBroker.get().getPlant(newPlantNameText.toString().trim()) == null) {
                     errorMessageTextView.setText(R.string.error_invalid_plant_name);
                 } else {
                     String newPlantName = newPlantNameText.toString().trim();
-                    FirstFragment.updateDisplayedValues(rootView, DataBroker.get().getPlant(newPlantName));
+                    Plant plant = DataBroker.get().getPlant(newPlantName);
+                    FirstFragment.updateDisplayedValues(rootView, plant);
+                    FirstFragment.updateCheckboxes(rootView, plant);
                 }
             }
         });
@@ -166,12 +163,19 @@ public class FirstFragment extends Fragment {
         ((TextView) view.findViewById(R.id.luminosity)).setText(luminosity);
         ((TextView) view.findViewById(R.id.humidity)).setText(humidity);
 
-        String temperatureThreshold = String.valueOf(plant.temperature().getThreshold());
-        String luminosityThreshold = String.valueOf(plant.luminosity().getThreshold());
-        String humidityThreshold = String.valueOf(plant.humidity().getThreshold());
-        ((TextView) view.findViewById(R.id.temperature_threshold)).setText(temperatureThreshold);
-        ((TextView) view.findViewById(R.id.luminosity_threshold)).setText(luminosityThreshold);
-        ((TextView) view.findViewById(R.id.humidity_threshold)).setText(humidityThreshold);
+        String temperatureUpperThreshold = String.valueOf(plant.temperature().getUpperThreshold());
+        String temperatureLowerThreshold = String.valueOf(plant.temperature().getLowerThreshold());
+        String luminosityUpperThreshold = String.valueOf(plant.luminosity().getUpperThreshold());
+        String luminosityLowerThreshold = String.valueOf(plant.luminosity().getLowerThreshold());
+        String humidityUpperThreshold = String.valueOf(plant.humidity().getUpperThreshold());
+        String humidityLowerThreshold = String.valueOf(plant.humidity().getLowerThreshold());
+
+        ((TextView) view.findViewById(R.id.temperature_layout).findViewById(R.id.current_upper)).setText(temperatureUpperThreshold);
+        ((TextView) view.findViewById(R.id.temperature_layout).findViewById(R.id.current_lower)).setText(temperatureLowerThreshold);
+        ((TextView) view.findViewById(R.id.luminosity_layout).findViewById(R.id.current_upper)).setText(luminosityUpperThreshold);
+        ((TextView) view.findViewById(R.id.luminosity_layout).findViewById(R.id.current_lower)).setText(luminosityLowerThreshold);
+        ((TextView) view.findViewById(R.id.humidity_layout).findViewById(R.id.current_upper)).setText(humidityUpperThreshold);
+        ((TextView) view.findViewById(R.id.humidity_layout).findViewById(R.id.current_lower)).setText(humidityLowerThreshold);
 
         FirstFragment.updateDisplayedActiveFlag(view, plant);
     }
@@ -199,23 +203,21 @@ public class FirstFragment extends Fragment {
         }
         ((TextView) view.findViewById(R.id.humidity_actuator)).setText(activeFlag);
     }
-}
 
-class RefreshDataTask extends TimerTask {
-
-    private View rootView;
-
-    public RefreshDataTask(View view) {
-        this.rootView = view;
+    public static void updateCheckboxes(View view, Plant plant) {
+        ((CheckBox) view.findViewById(R.id.checkbox_temperature)).setChecked(plant.temperature().isForcedActive());
+        ((CheckBox) view.findViewById(R.id.checkbox_luminosity)).setChecked(plant.luminosity().isForcedActive());
+        ((CheckBox) view.findViewById(R.id.checkbox_humidity)).setChecked(plant.humidity().isForcedActive());
     }
 
-    @Override
-    public void run() {
-        TextView plantNameTextView = (TextView) rootView.findViewById(R.id.plant_name);
-        String plantName = String.valueOf(plantNameTextView.getText());
-        Plant plant = DataBroker.get().updateMeasurements(plantName);
-
-        //Update UI
-        FirstFragment.updateDisplayedValues(rootView, plant);
+    private static Double convertThresholdText(Editable thresholdText) throws NumberFormatException {
+        if (thresholdText != null) {
+            String threshold = thresholdText.toString().trim();
+            if (!threshold.equals("")) {
+                return Double.parseDouble(threshold);
+            }
+        }
+        return null;
     }
 }
+

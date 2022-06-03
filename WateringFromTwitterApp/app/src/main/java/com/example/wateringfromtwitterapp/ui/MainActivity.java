@@ -1,7 +1,8 @@
-package com.example.wateringfromtwitterapp;
+package com.example.wateringfromtwitterapp.ui;
 
 import android.os.Bundle;
 
+import com.example.wateringfromtwitterapp.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
