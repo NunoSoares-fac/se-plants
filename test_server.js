@@ -56,10 +56,12 @@ server.on('message', (msg, rinfo) => {
 
   //Send a response to the arduino with the current led state
   if (rinfo.address == ips[0]) {
-    toSend = "{\"led1\":\"" + (led.plant1.led1).toString() + "\",\"led2\":\"" + (led.plant1.led2).toString() + "\",\"led3\":\"" + (led.plant1.led3).toString() + "\"}";
+    toSend = "{\"led1\":\"" + (led.plant1.led1).toString() + "\",\"led2\":\"" +
+      (led.plant1.led2).toString() + "\",\"led3\":\"" + (led.plant1.led3).toString() + "\"}";
   }
   else {
-    toSend = "{\"led1\":\"" + (led.plant2.led1).toString() + "\",\"led2\":\"" + (led.plant2.led2).toString() + "\",\"led3\":\"" + (led.plant2.led3).toString() + "\"}";
+    toSend = "{\"led1\":\"" + (led.plant2.led1).toString() + "\",\"led2\":\"" +
+      (led.plant2.led2).toString() + "\",\"led3\":\"" + (led.plant2.led3).toString() + "\"}";
   }
   
   server.send(toSend, rinfo.port, rinfo.address, function (error) {
