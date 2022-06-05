@@ -1,5 +1,11 @@
 package com.example.wateringfromtwitterapp.logic;
 
+/**
+ * <p>Stores a plant's name and three MeasuredVariable instances, for temperature, luminosity
+ * and humidity related values.</p>
+ *
+ * @see MeasuredVariable
+ */
 public class Plant {
     private MeasuredVariable temperature;
     private MeasuredVariable luminosity;
@@ -13,7 +19,9 @@ public class Plant {
         this.plantName = plantName;
     }
 
-    public MeasuredVariable temperature() {return temperature;}
+    public MeasuredVariable temperature() {
+        return temperature;
+    }
 
     public MeasuredVariable luminosity() {
         return luminosity;

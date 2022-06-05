@@ -1,5 +1,14 @@
 package com.example.wateringfromtwitterapp.logic;
 
+/**
+ * <p>Stores a variable with a value, upper and lower thresholds, the respective actuator's state
+ * and a boolean that indicates if the actuator has been activated by the user.</p>
+ * <p>All members have getters and setters, though the user activated actuator indicator can only
+ * be toggled, not changed to a specific value</p>
+ * <p>By default, every the user activated actuator indicator starts as false, which will make the
+ * app disabling these on the server side if they were activated before.
+ * </p>
+ */
 public class MeasuredVariable {
     private double value;
     private double upperThreshold;

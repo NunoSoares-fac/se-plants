@@ -7,11 +7,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * <p>A singleton class that helps converting JSON objects to String Maps and vice-versa.</p>
+ */
 public class JsonHandler {
 
     private static JsonHandler instance = null;
 
-    private JsonHandler() {}
+    private JsonHandler() {
+    }
 
     public static JsonHandler get() {
         if (instance == null) {
@@ -24,6 +28,16 @@ public class JsonHandler {
         return instance;
     }
 
+    /**
+     * <p>Converts a JSON object to a String map, by creating keys that match the hierarchy of keys in
+     * the JSON object</p>
+     * <p>It is assumed that the JSON object contains wrapper objects, which are the plants' names,
+     * and within them come the actual values. Both of these are joined in a string, using '.' as a
+     * split character</p>
+     *
+     * @param body JSON object to convert
+     * @return Map of Strings with JSON's content as key/value pairs
+     */
     public Map<String, String> jsonToMap(JSONObject body) {
         Map<String, String> responseMap = new HashMap<>();
         try {
@@ -43,39 +57,23 @@ public class JsonHandler {
         return responseMap;
     }
 
-    public void jsonToMapNoWrapper(Map<String, String> map, String plantName, JSONObject body) {
-        try {
-            for (Iterator<String> it = body.keys(); it.hasNext(); ) {
-                String variable = it.next();
-                map.put(plantName + "." + variable, body.getString(variable));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public JSONObject mapToJson(Map<String,String> map, String[] plants) {
+    /**
+     * <p>Converts a Map of Strings to a JSON object, creating the wrapper objects that have the
+     * plants' names first and then adding to each the String values in the Map</p>
+     *
+     * @param map    Map of Strings with the content to be converted
+     * @param plants Array of plant names
+     * @return JSON object with the content of 'map'
+     */
+    public JSONObject mapToJson(Map<String, String> map, String[] plants) {
         JSONObject body = new JSONObject();
         try {
-            for (String plantName: plants) {
+            for (String plantName : plants) {
                 body.put(plantName, new JSONObject());
-                for (String key: map.keySet()) {
+                for (String key : map.keySet()) {
                     String variable = key.split("\\.")[1];
                     body.getJSONObject(plantName).put(variable, map.get(plantName + "." + variable));
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return body;
-    }
-
-    public JSONObject mapToJsonNoWrapper(Map<String,String> map, String plantName) {
-        JSONObject body = new JSONObject();
-        try {
-            for (String key: map.keySet()) {
-                body.put(key, map.get(plantName + "." + key));
             }
         } catch (Exception e) {
             e.printStackTrace();
