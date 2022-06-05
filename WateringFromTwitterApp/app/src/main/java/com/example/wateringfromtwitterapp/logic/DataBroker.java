@@ -88,7 +88,7 @@ public class DataBroker {
      * @return The Plant with the given name
      * @see Plant
      */
-    private Plant addPlant(String plantName) {
+    public Plant addPlant(String plantName) {
         plants.put(plantName, new Plant(plantName));
         return plants.get(plantName);
     }

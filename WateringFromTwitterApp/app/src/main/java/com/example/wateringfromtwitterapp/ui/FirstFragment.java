@@ -35,7 +35,8 @@ public class FirstFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         binding = FragmentFirstBinding.inflate(inflater, container, false);
-
+        DataBroker.get().addPlant("plant1");
+        DataBroker.get().addPlant("plant2");
         return binding.getRoot();
     }
 
@@ -48,8 +49,8 @@ public class FirstFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        DataBroker.get().loadPlant("plant1");
         DataBroker.get().loadPlant("plant2");
+        DataBroker.get().loadPlant("plant1");
         FirstFragment.updateDisplayedValues(view, DataBroker.get().getPlant("plant1"));
         FirstFragment.updateCheckboxes(view, DataBroker.get().getPlant("plant1"));
 
