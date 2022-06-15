@@ -25,7 +25,7 @@ import java.util.Map;
  * @see Plant
  */
 public class DataBroker {
-    public static String baseUri = "http://10.0.2.2:8081";
+    public static String baseUri = "http://20";
 
     private Map<String, Plant> plants = new HashMap<>();
     private static DataBroker instance = null;
@@ -169,26 +169,32 @@ public class DataBroker {
         Plant plant = plants.get(plantName);
         //Get values
         Map<String, String> responseMap = this.getResponse("/info");
-        System.out.println(responseMap.toString());
-        System.out.println(plantName);
-        plant.temperature().setValue(Double.parseDouble(responseMap.get(plantName + ".temperature")));
-        plant.luminosity().setValue(Double.parseDouble(responseMap.get(plantName + ".luminosity")));
-        plant.humidity().setValue(Double.parseDouble(responseMap.get(plantName + ".humidity")));
+        if (responseMap != null && !responseMap.isEmpty()) {
+            System.out.println(responseMap.toString());
+            System.out.println(plantName);
+            plant.temperature().setValue(Double.parseDouble(responseMap.get(plantName + ".temperature")));
+            plant.luminosity().setValue(Double.parseDouble(responseMap.get(plantName + ".luminosity")));
+            plant.humidity().setValue(Double.parseDouble(responseMap.get(plantName + ".humidity")));
+        }
+
 
         //Get thresholds
         responseMap = this.getResponse("/infoT");
-        plant.temperature().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".temperature_upper")));
-        plant.temperature().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".temperature_lower")));
-        plant.luminosity().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".luminosity_upper")));
-        plant.luminosity().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".luminosity_lower")));
-        plant.humidity().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".humidity_upper")));
-        plant.humidity().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".humidity_lower")));
-
+        if (responseMap != null && !responseMap.isEmpty()) {
+            plant.temperature().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".temperature_upper")));
+            plant.temperature().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".temperature_lower")));
+            plant.luminosity().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".luminosity_upper")));
+            plant.luminosity().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".luminosity_lower")));
+            plant.humidity().setUpperThreshold(Double.parseDouble(responseMap.get(plantName + ".humidity_upper")));
+            plant.humidity().setLowerThreshold(Double.parseDouble(responseMap.get(plantName + ".humidity_lower")));
+        }
         //Get actuator flags
         responseMap = this.getResponse("/infoL");
-        plant.humidity().setActive(responseMap.get(plantName + ".led1").equals("1"));
-        plant.luminosity().setActive(responseMap.get(plantName + ".led2").equals("1"));
-        plant.temperature().setActive(responseMap.get(plantName + ".led3").equals("1"));
+        if (responseMap != null && !responseMap.isEmpty()) {
+            plant.humidity().setActive(responseMap.get(plantName + ".led1").equals("1"));
+            plant.luminosity().setActive(responseMap.get(plantName + ".led2").equals("1"));
+            plant.temperature().setActive(responseMap.get(plantName + ".led3").equals("1"));
+        }
         return plants.get(plantName);
     }
 
